@@ -1,0 +1,30 @@
+# Developer tools' files
+.lite_workspace.lua
+
+# Neutralinojs binaries and builds
+/bin
+/dist
+
+# Neutralinojs client (minified)
+
+# Neutralinojs related files
+.storage
+*.log
+
+.tmp
+extensions/bun/_runtime
+extensions/bun/node_modules
+
+# Build artifacts
+dist/app/
+dist/releases/*.zip
+dist/releases/*.tar.gz
+
+# Compiled Bun executables (keep source files)
+extensions/bun/main-app*
+
+# Frontend build artifacts
+frontend/build
+
+# Node modules
+node_modules

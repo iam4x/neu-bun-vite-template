@@ -1,0 +1,69 @@
+{
+  "$schema": "https://raw.githubusercontent.com/neutralinojs/neutralinojs/main/schemas/neutralino.config.schema.json",
+  "applicationId": "js.neutralino.sample",
+  "version": "1.0.0",
+  "defaultMode": "window",
+  "documentRoot": "/frontend/build/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "enableExtensions": true,
+  "exportAuthInfo": true,
+  "singlePageServe": true,
+  "tokenSecurity": "one-time",
+  "logging": {
+    "enabled": true,
+    "writeToLogFile": true
+  },
+  "nativeAllowList": [
+    "app.*",
+    "os.*",
+    "window.*",
+    "events.*",
+    "extensions.*",
+    "debug.log"
+  ],
+  "globalVariables": {},
+  "modes": {
+    "window": {
+      "title": "app",
+      "width": 800,
+      "height": 500,
+      "minWidth": 400,
+      "minHeight": 200,
+      "center": true,
+      "fullScreen": false,
+      "alwaysOnTop": false,
+      "icon": "/frontend/icons/appIcon.png",
+      "enableInspector": true,
+      "borderless": false,
+      "maximize": false,
+      "hidden": false,
+      "resizable": true,
+      "exitProcessOnClose": false
+    }
+  },
+  "cli": {
+    "binaryName": "app",
+    "resourcesPath": "/frontend/build/",
+    "extensionsPath": "/extensions/",
+    "binaryVersion": "6.3.0",
+    "clientVersion": "6.3.0",
+    "frontendLibrary": {
+      "patchFile": "/frontend/index.html",
+      "devUrl": "http://localhost:3000",
+      "projectPath": "/frontend/",
+      "initCommand": "bun install",
+      "devCommand": "bun run dev",
+      "buildCommand": "bun run build"
+    }
+  },
+  "extensions": [
+    {
+      "id": "extBun",
+      "commandDarwin": "\"${NL_PATH}/extensions/bun/run\" \"${NL_PATH}\"",
+      "commandLinux": "\"${NL_PATH}/extensions/bun/run\" \"${NL_PATH}\"",
+      "commandWindows": "\"${NL_PATH}\\extensions\\bun\\run.cmd\" \"${NL_PATH}\""
+    }
+  ]
+}

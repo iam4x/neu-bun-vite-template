@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Smart detection: Use compiled executable if available for current architecture, fallback to runtime or source
+# ${1} is NL_PATH - in macOS bundles, this points to Contents/Resources; otherwise to app root
+ARCH=$(uname -m)
+OS=$(uname -s)
+
+# Detect if we're in a macOS app bundle (NL_PATH points to Contents/Resources)
+# If so, extensions are directly in NL_PATH/extensions
+# Otherwise, extensions are in NL_PATH/extensions
+EXT_DIR="${1}/extensions/bun"
+
+# Ensure execute permissions (in case they were lost during extraction)
+if [ -f "${EXT_DIR}/run" ]; then
+    chmod +x "${EXT_DIR}/run" 2>/dev/null || true
+fi
+
+# Check for platform-specific compiled executables first
+if [ "$OS" = "Darwin" ]; then
+    if [ "$ARCH" = "arm64" ] && [ -e "${EXT_DIR}/main-app-arm64" ]; then
+        # Ensure executable has permissions
+        chmod +x "${EXT_DIR}/main-app-arm64" 2>/dev/null || true
+        exec "${EXT_DIR}/main-app-arm64" $2 $3 $4
+    elif [ "$ARCH" = "x86_64" ] && [ -e "${EXT_DIR}/main-app-x64" ]; then
+        # Ensure executable has permissions
+        chmod +x "${EXT_DIR}/main-app-x64" 2>/dev/null || true
+        exec "${EXT_DIR}/main-app-x64" $2 $3 $4
+    elif [ -e "${EXT_DIR}/main-app" ]; then
+        # Ensure executable has permissions
+        chmod +x "${EXT_DIR}/main-app" 2>/dev/null || true
+        exec "${EXT_DIR}/main-app" $2 $3 $4
+    elif [ -e "${EXT_DIR}/src/main.ts" ]; then
+        # Development mode: use global Bun installation
+        exec bun run --inspect "${EXT_DIR}/src/main.ts"
+    else
+        echo "Error: Could not find Bun extension at ${EXT_DIR}" >&2
+        echo "Looking for: main-app-arm64, main-app-x64, main-app, or src/main.ts" >&2
+        exit 1
+    fi
+elif [ "$OS" = "Linux" ]; then
+    if [ -e "${EXT_DIR}/main-app" ]; then
+        # Ensure executable has permissions
+        chmod +x "${EXT_DIR}/main-app" 2>/dev/null || true
+        exec "${EXT_DIR}/main-app" $2 $3 $4
+    elif [ -e "${EXT_DIR}/src/main.ts" ]; then
+        # Development mode: use global Bun installation
+        exec bun run --inspect "${EXT_DIR}/src/main.ts"
+    else
+        echo "Error: Could not find Bun extension at ${EXT_DIR}" >&2
+        echo "Looking for: main-app or src/main.ts" >&2
+        exit 1
+    fi
+else
+    # Fallback to main.ts if nothing else found
+    if [ -e "${EXT_DIR}/src/main.ts" ]; then
+        # Development mode: use global Bun installation
+        exec bun run --inspect "${EXT_DIR}/src/main.ts"
+    else
+        echo "Error: Could not find Bun extension at ${EXT_DIR}" >&2
+        echo "Looking for: main-app or src/main.ts" >&2
+        exit 1
+    fi
+fi
